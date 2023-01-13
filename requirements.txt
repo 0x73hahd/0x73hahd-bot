@@ -1,0 +1,3 @@
+discord # For to connect with the discord API
+tekore # For to connect with the Spotify API
+pathlib2 # To handle paths simantically

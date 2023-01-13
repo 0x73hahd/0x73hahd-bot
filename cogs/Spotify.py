@@ -1,19 +1,16 @@
-import json
 from pathlib import Path
-
 import tekore as tk
 from discord import Embed
 from discord.ext import commands
+from configs import Configs
 
 cwd = Path(__file__).cwd()
 cwd = str(cwd)
 
-hiding = json.load(open(cwd + '/hiding.json'))
-client_id = hiding['client_id']
-client_secret = hiding['client_secret']
-redirect_uri = hiding['redirect_uri']
-token_spotify = tk.request_client_token(client_id=client_id,
-                                        client_secret=client_secret)
+configs = Configs.instance()
+
+token_spotify = tk.request_client_token(client_id=configs.spotify_client_id,
+                                        client_secret=configs.spotify_client_secret)
 spotify = tk.Spotify(token_spotify,
                      asynchronous=True)
 scope = tk.scope.user_top_read + tk.scope.playlist_modify_private
@@ -52,9 +49,9 @@ class Spotify(commands.Cog):
 
     @commands.command(aliases=['re'])
     async def recommend(self, ctx):
-        spotify_token = tk.prompt_for_user_token(client_id=client_id,
-                                                 client_secret=client_secret,
-                                                 redirect_uri=redirect_uri,
+        spotify_token = tk.prompt_for_user_token(client_id=configs.client_id,
+                                                 client_secret=configs.client_secret,
+                                                 redirect_uri=configs.redirect_uri,
                                                  scope=scope)
         spotify2 = tk.Spotify(spotify_token)
 
