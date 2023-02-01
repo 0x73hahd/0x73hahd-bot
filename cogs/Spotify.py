@@ -4,7 +4,6 @@ from discord import Embed
 from discord.ext import commands
 from configs import Configs
 
-cwd = Path(__file__).cwd()
 
 configs = Configs.instance()
 
