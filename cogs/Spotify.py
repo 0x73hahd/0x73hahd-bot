@@ -5,14 +5,15 @@ from discord.ext import commands
 from configs import Configs
 
 cwd = Path(__file__).cwd()
-cwd = str(cwd)
 
 configs = Configs.instance()
 
-token_spotify = tk.request_client_token(client_id=configs.spotify_client_id,
-                                        client_secret=configs.spotify_client_secret)
-spotify = tk.Spotify(token_spotify,
-                     asynchronous=True)
+token_spotify = tk.request_client_token(
+    client_id=configs.spotify_client_id,
+    client_secret=configs.spotify_client_secret
+)
+
+spotify = tk.Spotify(token_spotify, asynchronous=True)
 scope = tk.scope.user_top_read + tk.scope.playlist_modify_private
 
 
@@ -24,35 +25,36 @@ class Spotify(commands.Cog):
     async def on_ready(self):
         pass
 
-    @commands.command(aliases=['tk'])
-    async def track(self, ctx, *, query: str = None):
+    @commands.command(aliases=["tk"])
+    async def track(self, ctx, *, query: str | None = None):
         if query is None:
             await ctx.send("No search query specified")
             await ctx.send("The command should look like this ```$ track [Name] ```")
             return
-        tracks, = await spotify.search(query, limit=5)
+
+        (tracks,) = await spotify.search(query, limit=5)
 
         embed = Embed(title="Track search results", color=0x921030)
         embed.set_thumbnail(url="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png")
-        embed.set_footer(text="Requested by " + ctx.author.display_name)
+        embed.set_footer(text=f"Requested by {ctx.author.display_name}")
+
         for t in tracks.items:
             artist = t.artists[0].name
             url = t.external_urls["spotify"]
 
-            message = "\n".join([
-                f"[Open on Spotify](" + url + ")",
-                ":musical_note: " + artist,
-                ":star: " + t.album.name
-            ])
+            message = "\n".join([f"[Open on Spotify]({url})", f":musical_note: {artist}", f":star: {t.album.name}"])
+
             embed.add_field(name=t.name, value=message, inline=False)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['re'])
+    @commands.command(aliases=["re"])
     async def recommend(self, ctx):
-        spotify_token = tk.prompt_for_user_token(client_id=configs.client_id,
-                                                 client_secret=configs.client_secret,
-                                                 redirect_uri=configs.redirect_uri,
-                                                 scope=scope)
+        spotify_token = tk.prompt_for_user_token(
+            client_id=configs.spotify_client_id,
+            client_secret=configs.spotify_client_secret,
+            redirect_uri=configs.spotify_redirect_uri,
+            scope=scope,
+        )
         spotify2 = tk.Spotify(spotify_token)
 
         top_tracks = spotify2.current_user_top_tracks(limit=5).items
@@ -61,17 +63,14 @@ class Spotify(commands.Cog):
 
         embed = Embed(title="Recommendations", color=0x921030)
         embed.set_thumbnail(url="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png")
-        embed.set_footer(text="Requested by " + ctx.author.display_name)
+        embed.set_footer(text=f"Requested by {ctx.author.display_name}")
 
         for t in recommendations:
             artist = t.artists[0].name
             url = t.external_urls["spotify"]
 
-            message = "\n".join([
-                f"[Open on Spotify](" + url + ")",
-                ":musical_note: " + artist,
-                ":star: " + t.album.name
-            ])
+            message = "\n".join([f"[Open on Spotify]({url})", f":musical_note: {artist}", f":star: {t.album.name}"])
+
             embed.add_field(name=t.name, value=message, inline=False)
         await ctx.send(embed=embed)
 

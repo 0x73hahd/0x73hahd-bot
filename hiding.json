@@ -1,7 +1,7 @@
 {
   "discord_token": "Your Discord Token",
   "spotify_token": "Your Spotify Token",
-  "client_id": "Your Spotify Client ID",
-  "client_secret": "Your Spotify Client Secret",
-  "redirect_uri": "Your Spotify redirect uri"
+  "spotify_client_id": "Your Spotify Client ID",
+  "spotify_client_secret": "Your Spotify Client Secret",
+  "spotify_redirect_uri": "Your Spotify redirect uri"
 }
